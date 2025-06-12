@@ -3,35 +3,24 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export interface CollegeProfile {
   id: string;
-  email: string;
-  phone: string;
+  userId: string;
   collegeName: string;
+  phone: string;
   address: string;
-  settings: {
-    notifications: {
-      emailNotifications: boolean;
-      studentUpdates: boolean;
-      recruitmentAlerts: boolean;
-    };
-  };
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CollegeNotificationSettings {
-  emailNotifications: boolean;
-  studentUpdates: boolean;
-  recruitmentAlerts: boolean;
-}
-
-export interface CollegeProfileDetails {
-  phone: string;
+export interface UpdateCollegeProfileRequest {
   collegeName: string;
+  phone: string;
   address: string;
 }
 
 export const collegeProfileApi = createApi({
   reducerPath: 'collegeProfileApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: '/api/college/',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/profile/college',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -43,22 +32,14 @@ export const collegeProfileApi = createApi({
   tagTypes: ['CollegeProfile'],
   endpoints: (builder) => ({
     getCollegeProfile: builder.query<CollegeProfile, void>({
-      query: () => 'profile',
+      query: () => '/',
       providesTags: ['CollegeProfile'],
     }),
-    updateCollegeNotificationSettings: builder.mutation<void, CollegeNotificationSettings>({
-      query: (settings) => ({
-        url: 'settings/notifications',
+    updateCollegeProfileDetails: builder.mutation<CollegeProfile, UpdateCollegeProfileRequest>({
+      query: (profileData) => ({
+        url: '/details',
         method: 'PUT',
-        body: settings,
-      }),
-      invalidatesTags: ['CollegeProfile'],
-    }),
-    updateCollegeProfileDetails: builder.mutation<void, CollegeProfileDetails>({
-      query: (details) => ({
-        url: 'profile',
-        method: 'PUT',
-        body: details,
+        body: profileData,
       }),
       invalidatesTags: ['CollegeProfile'],
     }),
@@ -67,6 +48,5 @@ export const collegeProfileApi = createApi({
 
 export const {
   useGetCollegeProfileQuery,
-  useUpdateCollegeNotificationSettingsMutation,
   useUpdateCollegeProfileDetailsMutation,
 } = collegeProfileApi;

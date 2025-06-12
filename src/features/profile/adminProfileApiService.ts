@@ -3,33 +3,22 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export interface AdminProfile {
   id: string;
-  email: string;
+  userId: string;
   role: string;
   permissions: string[];
-  settings: {
-    notifications: {
-      emailNotifications: boolean;
-      systemAlerts: boolean;
-      userReports: boolean;
-    };
-  };
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface AdminNotificationSettings {
-  emailNotifications: boolean;
-  systemAlerts: boolean;
-  userReports: boolean;
-}
-
-export interface AdminProfileDetails {
+export interface UpdateAdminProfileRequest {
   role: string;
   permissions: string[];
 }
 
 export const adminProfileApi = createApi({
   reducerPath: 'adminProfileApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: '/api/admin/',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/profile/admin',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -41,22 +30,14 @@ export const adminProfileApi = createApi({
   tagTypes: ['AdminProfile'],
   endpoints: (builder) => ({
     getAdminProfile: builder.query<AdminProfile, void>({
-      query: () => 'profile',
+      query: () => '/',
       providesTags: ['AdminProfile'],
     }),
-    updateAdminNotificationSettings: builder.mutation<void, AdminNotificationSettings>({
-      query: (settings) => ({
-        url: 'settings/notifications',
+    updateAdminProfileDetails: builder.mutation<AdminProfile, UpdateAdminProfileRequest>({
+      query: (profileData) => ({
+        url: '/details',
         method: 'PUT',
-        body: settings,
-      }),
-      invalidatesTags: ['AdminProfile'],
-    }),
-    updateAdminProfileDetails: builder.mutation<void, AdminProfileDetails>({
-      query: (details) => ({
-        url: 'profile',
-        method: 'PUT',
-        body: details,
+        body: profileData,
       }),
       invalidatesTags: ['AdminProfile'],
     }),
@@ -65,6 +46,5 @@ export const adminProfileApi = createApi({
 
 export const {
   useGetAdminProfileQuery,
-  useUpdateAdminNotificationSettingsMutation,
   useUpdateAdminProfileDetailsMutation,
 } = adminProfileApi;

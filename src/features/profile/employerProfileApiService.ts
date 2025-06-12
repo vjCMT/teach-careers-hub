@@ -3,37 +3,22 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export interface EmployerProfile {
   id: string;
-  email: string;
-  phone: string;
+  userId: string;
   companyName: string;
-  settings: {
-    notifications: {
-      emailNotifications: boolean;
-      pushNotifications: boolean;
-      jobAlerts: boolean;
-      messageNotifications: boolean;
-      marketingEmails: boolean;
-    };
-  };
+  phone: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface NotificationSettings {
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  jobAlerts: boolean;
-  messageNotifications: boolean;
-  marketingEmails: boolean;
-}
-
-export interface EmployerProfileDetails {
-  phone: string;
+export interface UpdateEmployerProfileRequest {
   companyName: string;
+  phone: string;
 }
 
 export const employerProfileApi = createApi({
   reducerPath: 'employerProfileApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: '/api/employer/',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/profile/employer',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -45,22 +30,14 @@ export const employerProfileApi = createApi({
   tagTypes: ['EmployerProfile'],
   endpoints: (builder) => ({
     getEmployerProfile: builder.query<EmployerProfile, void>({
-      query: () => 'profile',
+      query: () => '/',
       providesTags: ['EmployerProfile'],
     }),
-    updateNotificationSettings: builder.mutation<void, NotificationSettings>({
-      query: (settings) => ({
-        url: 'settings/notifications',
+    updateEmployerProfileDetails: builder.mutation<EmployerProfile, UpdateEmployerProfileRequest>({
+      query: (profileData) => ({
+        url: '/details',
         method: 'PUT',
-        body: settings,
-      }),
-      invalidatesTags: ['EmployerProfile'],
-    }),
-    updateEmployerProfileDetails: builder.mutation<void, EmployerProfileDetails>({
-      query: (details) => ({
-        url: 'profile',
-        method: 'PUT',
-        body: details,
+        body: profileData,
       }),
       invalidatesTags: ['EmployerProfile'],
     }),
@@ -69,6 +46,5 @@ export const employerProfileApi = createApi({
 
 export const {
   useGetEmployerProfileQuery,
-  useUpdateNotificationSettingsMutation,
   useUpdateEmployerProfileDetailsMutation,
 } = employerProfileApi;

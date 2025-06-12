@@ -1,31 +1,28 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-export interface User {
-  id: string;
-  email: string;
-  role: 'employer' | 'college' | 'admin';
-}
+import { User } from './authSlice';
 
 export interface AuthResponse {
   data: User;
+  message: string;
 }
 
-export interface UpdatePasswordRequest {
-  currentPassword: string;
-  newPassword: string;
-}
-
-export interface DeleteAccountRequest {
+export interface LoginRequest {
+  email: string;
   password: string;
+}
+
+export interface SignupRequest {
+  email: string;
+  password: string;
+  role: 'employer' | 'college' | 'admin';
 }
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: '/api/auth/',
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api/auth',
     prepareHeaders: (headers) => {
-      // Add auth token if available
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
@@ -36,50 +33,36 @@ export const authApi = createApi({
   tagTypes: ['User'],
   endpoints: (builder) => ({
     getMe: builder.query<AuthResponse, void>({
-      query: () => 'me',
+      query: () => '/me',
       providesTags: ['User'],
     }),
-    updatePassword: builder.mutation<void, UpdatePasswordRequest>({
+    login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
-        url: 'updatepassword',
-        method: 'PUT',
-        body: credentials,
-      }),
-    }),
-    deleteAccount: builder.mutation<void, DeleteAccountRequest>({
-      query: (credentials) => ({
-        url: 'deleteaccount',
-        method: 'DELETE',
-        body: credentials,
-      }),
-    }),
-    login: builder.mutation({
-      query: (credentials) => ({
-        url: 'login',
+        url: '/login',
         method: 'POST',
         body: credentials,
       }),
+      invalidatesTags: ['User'],
     }),
-    signup: builder.mutation({
-      query: (credentials) => ({
-        url: 'signup',
+    signup: builder.mutation<AuthResponse, SignupRequest>({
+      query: (userData) => ({
+        url: '/signup',
         method: 'POST',
-        body: credentials,
+        body: userData,
       }),
     }),
-    logout: builder.mutation<void, void>({
+    logout: builder.mutation<{ message: string }, void>({
       query: () => ({
-        url: 'logout',
+        url: '/logout',
         method: 'POST',
       }),
+      invalidatesTags: ['User'],
     }),
   }),
 });
 
 export const {
   useGetMeQuery,
-  useUpdatePasswordMutation,
-  useDeleteAccountMutation,
   useLoginMutation,
   useSignupMutation,
   useLogoutMutation,

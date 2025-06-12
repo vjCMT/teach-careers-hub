@@ -15,7 +15,17 @@ export const store = configureStore({
     [adminProfileApi.reducerPath]: adminProfileApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          'persist/PERSIST',
+          'persist/REHYDRATE',
+          'persist/PAUSE',
+          'persist/PURGE',
+          'persist/REGISTER',
+        ],
+      },
+    }).concat(
       authApi.middleware,
       employerProfileApi.middleware,
       collegeProfileApi.middleware,
