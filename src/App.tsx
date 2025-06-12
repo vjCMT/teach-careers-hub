@@ -6,9 +6,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/config';
 import { AuthProvider } from './contexts/AuthContext';
-import { useAppDispatch, useAppSelector } from './app/hooks';
-import { useGetMeQuery } from './features/auth/authApiService';
-import { setCredentials, selectIsAuthenticated } from './features/auth/authSlice';
+import { useAppSelector } from './app/hooks';
+import { selectIsAuthenticated } from './features/auth/authSlice';
 import { Toaster } from 'react-hot-toast';
 
 // Import existing pages
@@ -32,8 +31,6 @@ import Help from './pages/Help';
 import SalaryDetailsPage from './pages/SalaryDetailsPage';
 import FindCV from './pages/FindCV';
 import Resources from './pages/Resources';
-
-// Import new Redux-based Settings page
 import SettingsPage from './pages/SettingsPage/SettingsPage';
 
 const ProtectedRoute = () => {
@@ -42,26 +39,6 @@ const ProtectedRoute = () => {
 };
 
 const AppContent = () => {
-  const dispatch = useAppDispatch();
-  const { data, isLoading, isSuccess } = useGetMeQuery();
-
-  useEffect(() => {
-    if (isSuccess && data) {
-      dispatch(setCredentials({ user: data.data }));
-    }
-  }, [data, isSuccess, dispatch]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-page flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading Application...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Router>
       <Routes>
