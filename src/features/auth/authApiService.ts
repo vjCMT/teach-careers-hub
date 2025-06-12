@@ -1,6 +1,11 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { User } from './authSlice';
+
+export interface User {
+  id: string;
+  email: string;
+  role: 'employer' | 'college' | 'admin';
+}
 
 export interface AuthResponse {
   data: User;
