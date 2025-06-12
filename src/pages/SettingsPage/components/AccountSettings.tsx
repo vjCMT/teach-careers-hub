@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { User } from '../../../features/auth/authSlice';
 import { useGetEmployerProfileQuery, useUpdateEmployerProfileDetailsMutation } from '../../../features/profile/employerProfileApiService';
 import { useGetCollegeProfileQuery, useUpdateCollegeProfileDetailsMutation } from '../../../features/profile/collegeProfileApiService';
