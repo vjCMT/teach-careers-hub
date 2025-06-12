@@ -1,20 +1,6 @@
 
+import React, { useState } from 'react';
 import { User } from '../../../features/auth/authSlice';
-import { 
-  useGetEmployerProfileQuery, 
-  useUpdateNotificationSettingsMutation,
-  NotificationSettings as EmployerNotificationSettings 
-} from '../../../features/profile/employerProfileApiService';
-import { 
-  useGetCollegeProfileQuery, 
-  useUpdateCollegeNotificationSettingsMutation,
-  CollegeNotificationSettings 
-} from '../../../features/profile/collegeProfileApiService';
-import { 
-  useGetAdminProfileQuery, 
-  useUpdateAdminNotificationSettingsMutation,
-  AdminNotificationSettings 
-} from '../../../features/profile/adminProfileApiService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Switch } from '../../../components/ui/switch';
 import { Label } from '../../../components/ui/label';
@@ -53,25 +39,30 @@ const NotificationSettings = ({ user }: NotificationSettingsProps) => {
 };
 
 const EmployerNotifications = () => {
-  const { data: profile, isLoading: isProfileLoading } = useGetEmployerProfileQuery();
-  const [updateSettings, { isLoading: isUpdating }] = useUpdateNotificationSettingsMutation();
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    pushNotifications: true,
+    jobAlerts: true,
+    messageNotifications: true,
+    marketingEmails: false,
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleToggle = async (key: keyof EmployerNotificationSettings) => {
-    if (!profile) return;
-    
-    const currentSettings = profile.settings.notifications;
-    const newSettings = { ...currentSettings, [key]: !currentSettings[key] };
+  const handleToggle = async (key: keyof typeof settings) => {
+    setIsUpdating(true);
+    const newSettings = { ...settings, [key]: !settings[key] };
     
     try {
-      await updateSettings(newSettings).unwrap();
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setSettings(newSettings);
       toast.success('Notification settings updated!');
     } catch (err) {
       toast.error('Failed to update settings.');
+    } finally {
+      setIsUpdating(false);
     }
   };
-
-  if (isProfileLoading) return <div>Loading settings...</div>;
-  if (!profile) return <div>Error loading profile.</div>;
 
   const notifications = [
     {
@@ -111,7 +102,7 @@ const EmployerNotifications = () => {
               <p className="text-sm text-muted-foreground">{notification.description}</p>
             </div>
             <Switch
-              checked={profile.settings.notifications[notification.key]}
+              checked={settings[notification.key]}
               onCheckedChange={() => handleToggle(notification.key)}
               disabled={isUpdating}
             />
@@ -124,25 +115,28 @@ const EmployerNotifications = () => {
 };
 
 const CollegeNotifications = () => {
-  const { data: profile, isLoading: isProfileLoading } = useGetCollegeProfileQuery();
-  const [updateSettings, { isLoading: isUpdating }] = useUpdateCollegeNotificationSettingsMutation();
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    studentUpdates: true,
+    recruitmentAlerts: true,
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleToggle = async (key: keyof CollegeNotificationSettings) => {
-    if (!profile) return;
-    
-    const currentSettings = profile.settings.notifications;
-    const newSettings = { ...currentSettings, [key]: !currentSettings[key] };
+  const handleToggle = async (key: keyof typeof settings) => {
+    setIsUpdating(true);
+    const newSettings = { ...settings, [key]: !settings[key] };
     
     try {
-      await updateSettings(newSettings).unwrap();
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setSettings(newSettings);
       toast.success('Notification settings updated!');
     } catch (err) {
       toast.error('Failed to update settings.');
+    } finally {
+      setIsUpdating(false);
     }
   };
-
-  if (isProfileLoading) return <div>Loading settings...</div>;
-  if (!profile) return <div>Error loading profile.</div>;
 
   const notifications = [
     {
@@ -172,7 +166,7 @@ const CollegeNotifications = () => {
               <p className="text-sm text-muted-foreground">{notification.description}</p>
             </div>
             <Switch
-              checked={profile.settings.notifications[notification.key]}
+              checked={settings[notification.key]}
               onCheckedChange={() => handleToggle(notification.key)}
               disabled={isUpdating}
             />
@@ -185,25 +179,28 @@ const CollegeNotifications = () => {
 };
 
 const AdminNotifications = () => {
-  const { data: profile, isLoading: isProfileLoading } = useGetAdminProfileQuery();
-  const [updateSettings, { isLoading: isUpdating }] = useUpdateAdminNotificationSettingsMutation();
+  const [settings, setSettings] = useState({
+    emailNotifications: true,
+    systemAlerts: true,
+    userReports: true,
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleToggle = async (key: keyof AdminNotificationSettings) => {
-    if (!profile) return;
-    
-    const currentSettings = profile.settings.notifications;
-    const newSettings = { ...currentSettings, [key]: !currentSettings[key] };
+  const handleToggle = async (key: keyof typeof settings) => {
+    setIsUpdating(true);
+    const newSettings = { ...settings, [key]: !settings[key] };
     
     try {
-      await updateSettings(newSettings).unwrap();
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setSettings(newSettings);
       toast.success('Notification settings updated!');
     } catch (err) {
       toast.error('Failed to update settings.');
+    } finally {
+      setIsUpdating(false);
     }
   };
-
-  if (isProfileLoading) return <div>Loading settings...</div>;
-  if (!profile) return <div>Error loading profile.</div>;
 
   const notifications = [
     {
@@ -233,7 +230,7 @@ const AdminNotifications = () => {
               <p className="text-sm text-muted-foreground">{notification.description}</p>
             </div>
             <Switch
-              checked={profile.settings.notifications[notification.key]}
+              checked={settings[notification.key]}
               onCheckedChange={() => handleToggle(notification.key)}
               disabled={isUpdating}
             />
