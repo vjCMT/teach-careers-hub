@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -231,7 +230,7 @@ const AdminUsers = () => {
           ))}
         </TabsContent>
 
-        <TabsTrigger value="admin" className="space-y-4">
+        <TabsContent value="admin" className="space-y-4">
           {filterUsersByRole('admin').map((user) => (
             <UserCard key={user.id} user={user} />
           ))}
