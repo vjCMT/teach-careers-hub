@@ -47,12 +47,12 @@ const AdminJobs = () => {
     const statusConfig = {
       'pending': { label: 'Pending Review', variant: 'secondary' as const, className: 'bg-yellow-100 text-yellow-800' },
       'approved': { label: 'Approved', variant: 'default' as const, className: 'bg-green-100 text-green-800' },
-      'rejected': { label: 'Rejected', variant: 'destructive' as const }
+      'rejected': { label: 'Rejected', variant: 'destructive' as const, className: 'bg-red-100 text-red-800' }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig];
     return (
-      <Badge variant={config.variant} className={config.className || ''}>
+      <Badge variant={config.variant} className={config.className}>
         {config.label}
       </Badge>
     );
