@@ -1,40 +1,65 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAppDispatch } from '@/app/hooks';
+import { useLoginMutation } from '@/features/auth/authApiService';
+import { setCredentials } from '@/features/auth/authSlice';
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
     if (!email || !password) {
       setError('Please fill in all fields');
-      setLoading(false);
+      toast.error('Please fill in all fields');
       return;
     }
 
-    const success = await login(email, password);
-    
-    if (success) {
-      navigate('/profile');
-    } else {
-      setError('Invalid email or password');
+    try {
+      console.log('Attempting login with:', { email });
+      const response = await login({ email, password }).unwrap();
+      console.log('Login response:', response);
+      
+      if (response.success) {
+        dispatch(setCredentials({ user: response.user }));
+        toast.success('Logged in successfully!');
+        
+        switch (response.user.role) {
+          case 'employer':
+            navigate('/my-profile');
+            break;
+          case 'college':
+            navigate('/college-profile');
+            break;
+          case 'admin':
+            navigate('/admin-profile');
+            break;
+          case 'employee':
+            navigate('/employee-profile');
+            break;
+          default:
+            navigate('/');
+        }
+      }
+    } catch (err: any) {
+      console.error('Login error:', err);
+      const errorMessage = err.data?.message || err.message || 'Invalid email or password';
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -81,17 +106,17 @@ const Login = () => {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
           
           <div className="mt-4 text-center text-sm">
             Don't have an account?{' '}
-            <Button variant="link" onClick={() => navigate('/signup')} className="p-0">
+            <button onClick={() => navigate('/signup')} className="p-0 font-medium text-primary hover:underline">
               Sign up
-            </Button>
+            </button>
           </div>
         </CardContent>
       </Card>

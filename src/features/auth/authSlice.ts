@@ -1,10 +1,10 @@
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 
 export interface User {
   id: string;
   email: string;
-  role: 'employer' | 'college' | 'admin';
+  role: 'employer' | 'college' | 'admin' | 'employee';
 }
 
 interface AuthState {
@@ -12,10 +12,23 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
+// Load initial state from localStorage
+const loadInitialState = (): AuthState => {
+  const storedState = localStorage.getItem('authState');
+  if (storedState) {
+    try {
+      return JSON.parse(storedState);
+    } catch (error) {
+      console.error('Error parsing stored auth state:', error);
+    }
+  }
+  return {
+    user: null,
+    isAuthenticated: false,
+  };
 };
+
+const initialState: AuthState = loadInitialState();
 
 const authSlice = createSlice({
   name: 'auth',
@@ -24,17 +37,19 @@ const authSlice = createSlice({
     setCredentials: (state, action: PayloadAction<{ user: User }>) => {
       state.user = action.payload.user;
       state.isAuthenticated = true;
+      // Save to localStorage
+      localStorage.setItem('authState', JSON.stringify(state));
     },
     logOut: (state) => {
       state.user = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('token');
+      // Clear from localStorage
+      localStorage.removeItem('authState');
     },
   },
 });
 
 export const { setCredentials, logOut } = authSlice.actions;
 export default authSlice.reducer;
-
-export const selectCurrentUser = (state: { auth: AuthState }) => state.auth.user;
-export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
+export const selectCurrentUser = (state: RootState) => state.auth.user;
+export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;

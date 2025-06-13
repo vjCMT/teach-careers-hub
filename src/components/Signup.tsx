@@ -1,77 +1,80 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAppDispatch } from '@/app/hooks';
+import { useSignupMutation } from '@/features/auth/authApiService';
+import { setCredentials } from '@/features/auth/authSlice';
+import toast from 'react-hot-toast';
 
 const Signup = () => {
-  const [name, setName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<'employer' | 'employee' | 'admin' | 'college' | ''>('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  
-  const { signup } = useAuth();
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [signup, { isLoading }] = useSignupMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    if (!name || !email || !password || !confirmPassword || !role) {
-      setError('Please fill in all fields');
-      setLoading(false);
+    if (!fullName || !email || !password || !confirmPassword || !role) {
+      const errorMessage = 'Please fill in all fields';
+      setError(errorMessage);
+      toast.error(errorMessage);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      setLoading(false);
+      const errorMessage = 'Passwords do not match';
+      setError(errorMessage);
+      toast.error(errorMessage);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setLoading(false);
+      const errorMessage = 'Password must be at least 6 characters long';
+      setError(errorMessage);
+      toast.error(errorMessage);
       return;
     }
 
-    const success = await signup(name, email, password, role as any);
-    
-    if (success) {
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-    } else {
-      setError('Email already exists. Please use a different email.');
-    }
-    
-    setLoading(false);
-  };
+    try {
+      const response = await signup({ fullName, email, password, confirmPassword, role }).unwrap();
+      
+      dispatch(setCredentials({ user: response.user }));
+      toast.success('Account created and logged in successfully!');
 
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-page px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center text-primary">Account Created!</CardTitle>
-            <CardDescription className="text-center">
-              Your account has been successfully created. Redirecting to login...
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
-    );
-  }
+      switch (response.user.role) {
+        case 'employer':
+          navigate('/my-profile');
+          break;
+        case 'college':
+          navigate('/college-profile');
+          break;
+        case 'admin':
+          navigate('/admin-profile');
+          break;
+        case 'employee':
+          navigate('/employee-profile');
+          break;
+        default:
+          navigate('/');
+      }
+    } catch (err: any) {
+      const errorMessage = err.data?.message || 'Signup failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-page px-4">
@@ -85,12 +88,12 @@ const Signup = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="fullName">Full Name</Label>
               <Input
-                id="name"
+                id="fullName"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Enter your full name"
                 required
               />
@@ -139,10 +142,10 @@ const Signup = () => {
                   <SelectValue placeholder="Choose your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="employer">Employer</SelectItem>
+                  <SelectItem value="employer">Teacher / Candidate</SelectItem>
+                  <SelectItem value="college">School / College</SelectItem>
                   <SelectItem value="employee">Employee</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="college">College</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -156,17 +159,17 @@ const Signup = () => {
             <Button 
               type="submit" 
               className="w-full" 
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? 'Creating Account...' : 'Sign Up'}
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </form>
           
           <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
-            <Button variant="link" onClick={() => navigate('/login')} className="p-0">
+            <button onClick={() => navigate('/login')} className="p-0 font-medium text-primary hover:underline">
               Login
-            </Button>
+            </button>
           </div>
         </CardContent>
       </Card>

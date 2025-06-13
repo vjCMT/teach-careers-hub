@@ -15,13 +15,15 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageToggle from "./LanguageToggle";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { logOut, selectCurrentUser } from "@/features/auth/authSlice";
 
 const Header = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectCurrentUser);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
@@ -50,7 +52,7 @@ const Header = () => {
   ];
 
   const handleLogout = () => {
-    logout();
+    dispatch(logOut());
     setIsProfileMenuOpen(false);
     navigate('/');
   };
@@ -258,29 +260,14 @@ const Header = () => {
                   </Link>
                 ))}
                 <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted"
+                  onClick={handleLogout}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
                 >
                   {t("header.profile.signOut")}
                 </button>
               </div>
             </div>
           )}
-          
-          <div className="pt-4 pb-3 border-t border-border">
-            <div className="px-2 space-y-1">
-              <Link
-                to="/post-job"
-                className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t("header.employers")}
-              </Link>
-            </div>
-          </div>
         </div>
       )}
     </header>
