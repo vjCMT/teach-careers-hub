@@ -196,7 +196,7 @@ const DeleteAccountModal = ({ onClose }: { onClose: () => void }) => {
     }
     try {
       await deleteAccount({ password }).unwrap();
-      await logoutUser({}).unwrap();
+      await logoutUser().unwrap();
       dispatch(logOut());
       toast.success('Account deleted successfully.');
       onClose();
