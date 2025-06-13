@@ -80,14 +80,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
+      {/* Fixed Sidebar */}
+      <div className="fixed left-0 top-0 w-64 h-screen bg-white shadow-lg flex flex-col">
         <div className="p-6 border-b">
           <h2 className="text-xl font-bold text-gray-900">{getRoleTitle()}</h2>
           <p className="text-sm text-gray-600 mt-1">{user?.email}</p>
         </div>
         
-        <nav className="p-4">
+        <nav className="flex-1 p-4 overflow-y-auto">
           <ul className="space-y-2">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -110,7 +110,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </ul>
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4">
+        {/* Signout Button at Bottom of Sidebar */}
+        <div className="p-4 border-t">
           <Button 
             variant="outline" 
             onClick={handleLogout}
@@ -122,10 +123,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          {children}
+      {/* Main Content with Left Margin and Scroll */}
+      <div className="flex-1 ml-64">
+        <div className="h-screen overflow-y-auto">
+          <div className="p-8">
+            {children}
+          </div>
         </div>
       </div>
     </div>
