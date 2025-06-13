@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   MessageSquare,
   Bell,
@@ -21,12 +20,10 @@ import {
   BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LanguageToggle from "./LanguageToggle";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { logOut, selectCurrentUser } from "@/features/auth/authSlice";
 
 const Header = () => {
-  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -35,10 +32,10 @@ const Header = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const navItems = [
-    { label: t("header.nav.home"), path: "/" },
-    { label: t("header.nav.companyReviews"), path: "/company-reviews" },
-    { label: t("header.nav.salaryGuide"), path: "/salary-guide" },
-    { label: t("header.nav.careerGuide"), path: "/career-guide" },
+    { label: "Home", path: "/" },
+    { label: "Company Reviews", path: "/company-reviews" },
+    { label: "Salary Guide", path: "/salary-guide" },
+    { label: "Career Guide", path: "/career-guide" },
   ];
 
   const getProfileMenuItems = () => {
@@ -70,12 +67,12 @@ const Header = () => {
         ];
       default:
         return [
-          { label: t("header.profile.profile"), path: "/profile", icon: FileText },
-          { label: t("header.profile.myJobs"), path: "/my-jobs", icon: Bookmark },
-          { label: t("header.profile.myReviews"), path: "/my-reviews", icon: Star },
-          { label: t("header.profile.settings"), path: "/settings", icon: SettingsIcon },
-          { label: t("header.profile.help"), path: "/help", icon: HelpCircle },
-          { label: t("header.profile.privacyCenter"), path: "/privacy-centre", icon: Lock }
+          { label: "Profile", path: "/profile", icon: FileText },
+          { label: "My Jobs", path: "/my-jobs", icon: Bookmark },
+          { label: "My Reviews", path: "/my-reviews", icon: Star },
+          { label: "Settings", path: "/settings", icon: SettingsIcon },
+          { label: "Help", path: "/help", icon: HelpCircle },
+          { label: "Privacy Center", path: "/privacy-centre", icon: Lock }
         ];
     }
   };
@@ -114,7 +111,7 @@ const Header = () => {
           <div className="flex items-center gap-8">
             <Link to="/" className="flex-shrink-0">
               <span className="text-3xl font-bold text-primary">
-                {t("header.brandName")}
+                Teacher-Connect
               </span>
             </Link>
 
@@ -137,7 +134,6 @@ const Header = () => {
 
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-1">
-              <LanguageToggle />
               {user ? (
                 <>
                   <Button variant="ghost" size="icon" asChild>
@@ -193,7 +189,7 @@ const Header = () => {
                             onClick={handleLogout}
                             className="w-full text-left px-4 py-3 text-sm font-medium text-primary hover:bg-muted"
                           >
-                            {t("header.profile.signOut")}
+                            Sign Out
                           </button>
                         </div>
                       </div>
@@ -221,7 +217,7 @@ const Header = () => {
                 to="/post-job"
                 className="text-sm font-medium text-muted-foreground hover:text-primary"
               >
-                {t("header.employers")}
+                Post a Job
               </Link>
             </div>
 
@@ -240,9 +236,6 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-background border-t border-border">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <div className="px-3 py-2">
-              <LanguageToggle />
-            </div>
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -298,7 +291,7 @@ const Header = () => {
                   onClick={handleLogout}
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-muted"
                 >
-                  {t("header.profile.signOut")}
+                  Sign Out
                 </button>
               </div>
             </div>
