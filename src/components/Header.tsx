@@ -17,7 +17,9 @@ import {
   Shield,
   Eye,
   Plus,
-  BarChart3
+  BarChart3,
+  Send,
+  Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
@@ -43,37 +45,37 @@ const Header = () => {
 
     switch (user.role) {
       case 'employer':
+      case 'employee':
         return [
-          { label: 'My Profile', path: '/dashboard/employee/profile', icon: User },
-          { label: 'Skills & Experience', path: '/dashboard/employee/skills', icon: Briefcase },
+          { label: 'Profile', path: '/dashboard/employee/profile', icon: User },
+          { label: 'Skills & Qualifications', path: '/dashboard/employee/skills', icon: Briefcase },
           { label: 'Browse Jobs', path: '/dashboard/employee/jobs', icon: Eye },
           { label: 'My Applications', path: '/dashboard/employee/applications', icon: FileText },
-          { label: 'Settings', path: '/dashboard/employee/settings', icon: SettingsIcon }
+          { label: 'Settings', path: '/dashboard/employee/settings', icon: SettingsIcon },
+          { label: 'My jobs', path: '/my-jobs', icon: Bookmark },
+          { label: 'My reviews', path: '/my-reviews', icon: Star },
+          { label: 'Help', path: '/help', icon: HelpCircle },
+          { label: 'Privacy Centre', path: '/privacy-centre', icon: Lock }
         ];
       case 'college':
         return [
-          { label: 'College Profile', path: '/dashboard/college/profile', icon: Building },
+          { label: 'Profile', path: '/dashboard/college/profile', icon: Building },
           { label: 'Post New Job', path: '/dashboard/college/post-job', icon: Plus },
           { label: 'Manage Jobs', path: '/dashboard/college/jobs', icon: Briefcase },
           { label: 'Applications', path: '/dashboard/college/applications', icon: FileText },
+          { label: 'Shortlist', path: '/dashboard/college/shortlist', icon: Users },
+          { label: 'Offer Letter', path: '/dashboard/college/offer-letter', icon: Send },
           { label: 'Messages', path: '/dashboard/college/messages', icon: MessageSquare }
         ];
       case 'admin':
         return [
           { label: 'Manage Jobs', path: '/dashboard/admin/jobs', icon: Briefcase },
           { label: 'Manage Users', path: '/dashboard/admin/users', icon: User },
-          { label: 'Analytics', path: '/dashboard/admin/analytics', icon: BarChart3 },
-          { label: 'System Settings', path: '/dashboard/admin/settings', icon: Shield }
+          { label: 'Workflows', path: '/dashboard/admin/workflows', icon: BarChart3 },
+          { label: 'Control Panel', path: '/dashboard/admin/control-panel', icon: Shield }
         ];
       default:
-        return [
-          { label: "Profile", path: "/profile", icon: FileText },
-          { label: "My Jobs", path: "/my-jobs", icon: Bookmark },
-          { label: "My Reviews", path: "/my-reviews", icon: Star },
-          { label: "Settings", path: "/settings", icon: SettingsIcon },
-          { label: "Help", path: "/help", icon: HelpCircle },
-          { label: "Privacy Center", path: "/privacy-centre", icon: Lock }
-        ];
+        return [];
     }
   };
 
@@ -87,20 +89,7 @@ const Header = () => {
 
   const handleProfileIconClick = () => {
     if (user) {
-      // Navigate to role-based dashboard
-      switch (user.role) {
-        case 'employer':
-          navigate('/dashboard/employee/profile');
-          break;
-        case 'college':
-          navigate('/dashboard/college/profile');
-          break;
-        case 'admin':
-          navigate('/dashboard/admin/jobs');
-          break;
-        default:
-          setIsProfileMenuOpen(!isProfileMenuOpen);
-      }
+      setIsProfileMenuOpen(!isProfileMenuOpen);
     }
   };
 
@@ -156,7 +145,7 @@ const Header = () => {
                             {user.email}
                           </p>
                           <p className="text-xs text-muted-foreground capitalize">
-                            {user.role}
+                            {user.role === 'employer' ? 'Employee' : user.role}
                           </p>
                         </div>
                         <div className="py-1">
@@ -275,7 +264,7 @@ const Header = () => {
             <div className="pt-4 pb-3 border-t border-border">
               <div className="px-2 space-y-1">
                 <div className="px-3 py-2 text-sm text-muted-foreground">
-                  Logged in as: {user.email} ({user.role})
+                  Logged in as: {user.email} ({user.role === 'employer' ? 'Employee' : user.role})
                 </div>
                 {profileMenuItems.map((item) => (
                   <Link

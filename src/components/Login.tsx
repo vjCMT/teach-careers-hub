@@ -38,23 +38,8 @@ const Login = () => {
         dispatch(setCredentials({ user: response.user }));
         toast.success('Logged in successfully!');
         
-        // Redirect based on user role to dashboard
-        switch (response.user.role) {
-          case 'employer':
-            navigate('/dashboard/employee/profile');
-            break;
-          case 'college':
-            navigate('/dashboard/college/profile');
-            break;
-          case 'admin':
-            navigate('/dashboard/admin/jobs');
-            break;
-          case 'employee':
-            navigate('/dashboard/employee/profile');
-            break;
-          default:
-            navigate('/');
-        }
+        // Redirect to home page after successful login
+        navigate('/');
       }
     } catch (err: any) {
       console.error('Login error:', err);

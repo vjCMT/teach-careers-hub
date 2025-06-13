@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -53,22 +54,8 @@ const Signup = () => {
       dispatch(setCredentials({ user: response.user }));
       toast.success('Account created and logged in successfully!');
 
-      switch (response.user.role) {
-        case 'employer':
-          navigate('/my-profile');
-          break;
-        case 'college':
-          navigate('/college-profile');
-          break;
-        case 'admin':
-          navigate('/admin-profile');
-          break;
-        case 'employee':
-          navigate('/employee-profile');
-          break;
-        default:
-          navigate('/');
-      }
+      // Redirect to home page after successful signup
+      navigate('/');
     } catch (err: any) {
       const errorMessage = err.data?.message || 'Signup failed. Please try again.';
       setError(errorMessage);
@@ -142,9 +129,8 @@ const Signup = () => {
                   <SelectValue placeholder="Choose your role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="employer">Teacher / Candidate</SelectItem>
+                  <SelectItem value="employer">Teacher / Job Seeker</SelectItem>
                   <SelectItem value="college">School / College</SelectItem>
-                  <SelectItem value="employee">Employee</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
