@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -12,6 +13,12 @@ import {
   Settings as SettingsIcon,
   HelpCircle,
   Lock,
+  Briefcase,
+  Building,
+  Shield,
+  Eye,
+  Plus,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import LanguageToggle from "./LanguageToggle";
@@ -34,27 +41,70 @@ const Header = () => {
     { label: t("header.nav.careerGuide"), path: "/career-guide" },
   ];
 
-  const profileMenuItems = [
-    { label: t("header.profile.profile"), path: "/profile", icon: FileText },
-    { label: t("header.profile.myJobs"), path: "/my-jobs", icon: Bookmark },
-    { label: t("header.profile.myReviews"), path: "/my-reviews", icon: Star },
-    {
-      label: t("header.profile.settings"),
-      path: "/settings",
-      icon: SettingsIcon,
-    },
-    { label: t("header.profile.help"), path: "/help", icon: HelpCircle },
-    {
-      label: t("header.profile.privacyCenter"),
-      path: "/privacy-centre",
-      icon: Lock,
-    },
-  ];
+  const getProfileMenuItems = () => {
+    if (!user) return [];
+
+    switch (user.role) {
+      case 'employer':
+        return [
+          { label: 'My Profile', path: '/dashboard/employee/profile', icon: User },
+          { label: 'Skills & Experience', path: '/dashboard/employee/skills', icon: Briefcase },
+          { label: 'Browse Jobs', path: '/dashboard/employee/jobs', icon: Eye },
+          { label: 'My Applications', path: '/dashboard/employee/applications', icon: FileText },
+          { label: 'Settings', path: '/dashboard/employee/settings', icon: SettingsIcon }
+        ];
+      case 'college':
+        return [
+          { label: 'College Profile', path: '/dashboard/college/profile', icon: Building },
+          { label: 'Post New Job', path: '/dashboard/college/post-job', icon: Plus },
+          { label: 'Manage Jobs', path: '/dashboard/college/jobs', icon: Briefcase },
+          { label: 'Applications', path: '/dashboard/college/applications', icon: FileText },
+          { label: 'Messages', path: '/dashboard/college/messages', icon: MessageSquare }
+        ];
+      case 'admin':
+        return [
+          { label: 'Manage Jobs', path: '/dashboard/admin/jobs', icon: Briefcase },
+          { label: 'Manage Users', path: '/dashboard/admin/users', icon: User },
+          { label: 'Analytics', path: '/dashboard/admin/analytics', icon: BarChart3 },
+          { label: 'System Settings', path: '/dashboard/admin/settings', icon: Shield }
+        ];
+      default:
+        return [
+          { label: t("header.profile.profile"), path: "/profile", icon: FileText },
+          { label: t("header.profile.myJobs"), path: "/my-jobs", icon: Bookmark },
+          { label: t("header.profile.myReviews"), path: "/my-reviews", icon: Star },
+          { label: t("header.profile.settings"), path: "/settings", icon: SettingsIcon },
+          { label: t("header.profile.help"), path: "/help", icon: HelpCircle },
+          { label: t("header.profile.privacyCenter"), path: "/privacy-centre", icon: Lock }
+        ];
+    }
+  };
+
+  const profileMenuItems = getProfileMenuItems();
 
   const handleLogout = () => {
     dispatch(logOut());
     setIsProfileMenuOpen(false);
     navigate('/');
+  };
+
+  const handleProfileIconClick = () => {
+    if (user) {
+      // Navigate to role-based dashboard
+      switch (user.role) {
+        case 'employer':
+          navigate('/dashboard/employee/profile');
+          break;
+        case 'college':
+          navigate('/dashboard/college/profile');
+          break;
+        case 'admin':
+          navigate('/dashboard/admin/jobs');
+          break;
+        default:
+          setIsProfileMenuOpen(!isProfileMenuOpen);
+      }
+    }
   };
 
   return (
@@ -99,7 +149,7 @@ const Header = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                      onClick={handleProfileIconClick}
                     >
                       <User className="h-5 w-5 text-muted-foreground" />
                     </Button>
@@ -114,14 +164,6 @@ const Header = () => {
                           </p>
                         </div>
                         <div className="py-1">
-                          <Link
-                            to="/profile"
-                            className="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-muted"
-                            onClick={() => setIsProfileMenuOpen(false)}
-                          >
-                            <User className="w-5 h-5 text-muted-foreground" />
-                            <span>My Profile</span>
-                          </Link>
                           {profileMenuItems.map((item) => (
                             <Link
                               key={item.path}
@@ -242,13 +284,6 @@ const Header = () => {
                 <div className="px-3 py-2 text-sm text-muted-foreground">
                   Logged in as: {user.email} ({user.role})
                 </div>
-                <Link
-                  to="/profile"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  My Profile
-                </Link>
                 {profileMenuItems.map((item) => (
                   <Link
                     key={item.path}

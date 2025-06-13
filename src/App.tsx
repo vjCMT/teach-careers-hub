@@ -1,3 +1,4 @@
+
 // App.tsx
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -21,6 +22,21 @@ import i18n from './i18n/config';
 
 import Login from './components/Login';
 import Signup from './components/Signup';
+import DashboardLayout from './components/DashboardLayout';
+
+// Import all dashboard pages
+import EmployeeProfile from './pages/dashboard/employee/EmployeeProfile';
+import EmployeeSkills from './pages/dashboard/employee/EmployeeSkills';
+import EmployeeJobs from './pages/dashboard/employee/EmployeeJobs';
+import MyApplications from './pages/dashboard/employee/MyApplications';
+
+import CollegeProfile from './pages/dashboard/college/CollegeProfile';
+import PostJob from './pages/dashboard/college/PostJob';
+
+import AdminJobs from './pages/dashboard/admin/AdminJobs';
+import AdminUsers from './pages/dashboard/admin/AdminUsers';
+
+// Import existing pages
 import CareerGuide from './pages/CareerGuide';
 import CompanyReviews from './pages/CompanyReviews';
 import FindCV from './pages/FindCV';
@@ -33,7 +49,6 @@ import MyProfile from './pages/MyProfile';
 import MyReviews from './pages/MyReviews';
 import NotFound from './pages/NotFound';
 import Notifications from './pages/Notifications';
-import PostJob from './pages/PostJob';
 import Products from './pages/Products';
 import Profile from './pages/Profile';
 import Resources from './pages/Resources';
@@ -46,6 +61,16 @@ const ProtectedRoute = () => {
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
+const DashboardRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <DashboardLayout>{children}</DashboardLayout>;
+};
+
 const AppContent = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -56,7 +81,6 @@ const AppContent = () => {
   useEffect(() => {
     if (isAuthenticated) {
       refetch().catch(() => {
-        // If refetch fails, log out the user
         dispatch(logOut());
       });
     }
@@ -70,7 +94,6 @@ const AppContent = () => {
     }
   }, [isSuccess, isError, data, dispatch]);
 
-  // Only show loading state if we're authenticated and loading
   if (isLoading && isAuthenticated) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -95,7 +118,27 @@ const AppContent = () => {
         <Route path="/findcv" element={<FindCV />} />
         <Route path="/resources" element={<Resources />} />
 
-        {/* Protected Routes */}
+        {/* Dashboard Routes - Employee */}
+        <Route path="/dashboard/employee/profile" element={<DashboardRoute><EmployeeProfile /></DashboardRoute>} />
+        <Route path="/dashboard/employee/skills" element={<DashboardRoute><EmployeeSkills /></DashboardRoute>} />
+        <Route path="/dashboard/employee/jobs" element={<DashboardRoute><EmployeeJobs /></DashboardRoute>} />
+        <Route path="/dashboard/employee/applications" element={<DashboardRoute><MyApplications /></DashboardRoute>} />
+        <Route path="/dashboard/employee/settings" element={<DashboardRoute><SettingsPage /></DashboardRoute>} />
+
+        {/* Dashboard Routes - College */}
+        <Route path="/dashboard/college/profile" element={<DashboardRoute><CollegeProfile /></DashboardRoute>} />
+        <Route path="/dashboard/college/post-job" element={<DashboardRoute><PostJob /></DashboardRoute>} />
+        <Route path="/dashboard/college/jobs" element={<DashboardRoute><div>College Jobs Management - Coming Soon</div></DashboardRoute>} />
+        <Route path="/dashboard/college/applications" element={<DashboardRoute><div>College Applications - Coming Soon</div></DashboardRoute>} />
+        <Route path="/dashboard/college/messages" element={<DashboardRoute><Messages /></DashboardRoute>} />
+
+        {/* Dashboard Routes - Admin */}
+        <Route path="/dashboard/admin/jobs" element={<DashboardRoute><AdminJobs /></DashboardRoute>} />
+        <Route path="/dashboard/admin/users" element={<DashboardRoute><AdminUsers /></DashboardRoute>} />
+        <Route path="/dashboard/admin/analytics" element={<DashboardRoute><div>Analytics Dashboard - Coming Soon</div></DashboardRoute>} />
+        <Route path="/dashboard/admin/settings" element={<DashboardRoute><div>System Settings - Coming Soon</div></DashboardRoute>} />
+
+        {/* Protected Routes - Legacy */}
         <Route element={<ProtectedRoute />}>
           <Route path="/messages" element={<Messages />} />
           <Route path="/notifications" element={<Notifications />} />

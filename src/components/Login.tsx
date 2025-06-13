@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -37,18 +38,19 @@ const Login = () => {
         dispatch(setCredentials({ user: response.user }));
         toast.success('Logged in successfully!');
         
+        // Redirect based on user role to dashboard
         switch (response.user.role) {
           case 'employer':
-            navigate('/my-profile');
+            navigate('/dashboard/employee/profile');
             break;
           case 'college':
-            navigate('/college-profile');
+            navigate('/dashboard/college/profile');
             break;
           case 'admin':
-            navigate('/admin-profile');
+            navigate('/dashboard/admin/jobs');
             break;
           case 'employee':
-            navigate('/employee-profile');
+            navigate('/dashboard/employee/profile');
             break;
           default:
             navigate('/');
