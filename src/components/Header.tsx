@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useAppSelector } from "@/app/hooks";
 import { selectCurrentUser } from "@/features/auth/authSlice";
@@ -17,7 +18,7 @@ const Header = () => {
             <Link to="/" className="flex items-center gap-2">
               <GraduationCap className="h-8 w-8 text-primary" />
               <span className="text-2xl font-bold text-foreground">
-                EduSphere
+                TeacherConnect
               </span>
             </Link>
             <NavigationMenu />

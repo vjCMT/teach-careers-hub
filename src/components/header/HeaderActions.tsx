@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Bell } from "lucide-react";
@@ -17,11 +18,11 @@ const HeaderActions = ({ user }: HeaderActionsProps) => {
     <div className="flex items-center gap-2 sm:gap-4">
       {/* "For Employers" link styled as a ghost button for consistency */}
       <div className="hidden md:block">
-        {/* <Button variant="ghost" asChild>
+        <Button variant="ghost" asChild>
           <Link to="/post-job" className="text-sm font-medium">
-            {t("for_employers")}
+            For Employers
           </Link>
-        </Button> */}
+        </Button>
       </div>
       
       {/* A modern vertical separator */}
