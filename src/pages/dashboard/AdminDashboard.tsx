@@ -1,0 +1,99 @@
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useAppSelector } from '@/app/hooks';
+import { selectCurrentUser } from '@/features/auth/authSlice';
+import { Shield, Briefcase, Users, BarChart3, Monitor, Home, Settings,Newspaper,
+  DollarSign, } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const AdminDashboard = () => {
+  const user = useAppSelector(selectCurrentUser);
+  const location = useLocation();
+
+  const menuItems = [
+    { path: '/dashboard/admin/profile', label: 'My Profile', icon: Shield },
+    { path: '/dashboard/admin/jobs', label: 'Manage Jobs', icon: Briefcase },
+    { path: '/dashboard/admin/users', label: 'User Management', icon: Users },
+    { path: '/dashboard/admin/workflow', label: 'Workflows', icon: BarChart3 },
+    {
+      path: "/dashboard/admin/articles",
+      label: "Manage Articles",
+      icon: Newspaper,
+    },
+    {
+      path: "/dashboard/admin/salary-guides",
+      label: "Salary Guides",
+      icon: DollarSign,
+    },
+    { path: '/dashboard/admin/control', label: 'Control Panel', icon: Monitor },
+    { path: 'settings', label: 'Settings', icon: Settings },
+  ];
+
+  const getProfileMenuItems = () => {
+    switch (user.role?.toLowerCase()) {
+      case 'employer':
+        return [];
+      case 'college':
+        return [];
+      case 'admin':
+        return [
+          { label: 'My Profile', path: '/dashboard/admin/profile', icon: Shield },
+          { label: 'Manage Jobs', path: '/dashboard/admin/jobs', icon: Briefcase },
+          { label: 'User Management', path: '/dashboard/admin/users', icon: Users },
+          { label: 'Workflows', path: '/dashboard/admin/workflow', icon: BarChart3 },
+          { label: 'Control Panel', path: '/dashboard/admin/control', icon: Monitor },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-page">
+      <div className="flex">
+        <div className="w-64 bg-background border-r border-border">
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-foreground">Admin Dashboard</h2>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+              </div>
+            </div>
+            <nav className="space-y-2">
+              <Button variant="ghost" size="sm" asChild className="w-full justify-start">
+                <Link to="/">
+                  <Home className="w-4 h-4 mr-3" />
+                  Back to Home
+                </Link>
+              </Button>
+              {menuItems.map((item) => (
+                <Button
+                  key={item.path}
+                  variant={location.pathname.startsWith(item.path) ? "default" : "ghost"}
+                  size="sm"
+                  asChild
+                  className="w-full justify-start"
+                >
+                  <Link to={item.path}>
+                    <item.icon className="w-4 h-4 mr-3" />
+                    {item.label}
+                  </Link>
+                </Button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <div className="p-6">
+            <Outlet />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
